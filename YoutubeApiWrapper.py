@@ -19,3 +19,8 @@ def get_video_ids_from_playlist(playlist_id, next_page=''):
 
     return video_ids + get_video_ids_from_playlist(playlist_id, next_page_token) \
         if next_page_token else video_ids
+
+
+def print_video_ids_from_playlist(playlist_id):
+    ids = get_video_ids_from_playlist(playlist_id)
+    print(ids)
