@@ -1,3 +1,5 @@
 # TODO: Refactor DesktopInterface.py to class
 # TODO: Add threading to prevent GUI blocking
 # TODO: Add method to extract playlist/video id from youtube link
+
+# TODO: wywalić YoutubeApiWrapper i urzpątnąć DesktopInterface

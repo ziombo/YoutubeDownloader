@@ -1,6 +1,5 @@
 from YoutubeApiWrapper import get_video_ids_from_playlist, print_video_ids_from_playlist
-from DesktopInterface import show_video_dialog
+from DesktopInterface import show_video_dialog, download_mp3
 
-#print(len(get_video_ids_from_playlist('PLlJLQiVVXAD_Qg_4j58ZzqJDDAE3miL5F')))
 
-show_video_dialog(print_video_ids_from_playlist)
+show_video_dialog(download_mp3)
