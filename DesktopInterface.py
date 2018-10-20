@@ -1,34 +1,45 @@
 from tkinter import *
-from tkinter import messagebox
+from tkinter import ttk
 from tkinter.filedialog import askdirectory
+
 import youtube_dl
 
 
 def show_video_dialog(on_click):
     def call_function():
-        if hasattr(window, 'directory'):
-            on_click(e1.get(), window.directory)
+        if hasattr(root, 'directory'):
+            on_click(e1.get(), root.directory)
         else:
             on_click(e1.get(), askdirectory())
 
     def get_directory():
-        window.directory = askdirectory()
+        root.directory = askdirectory()
 
-    window = Tk()
-    window.title('Youtube Downloader')
-    # window.geometry('300x80')
+    root = Tk()
+    root.title('Youtube Downloader')
 
-    Label(window, text="Enter valid Youtube url").grid(row=0, padx=10)
+    mainframe = ttk.Frame(root)
+    mainframe.grid(padx=7, pady=3, sticky=(N, W, E, S))
 
-    e1 = Entry(window)
-    e1.grid(row=1, column=0, sticky=E + W, padx=10, pady=(0, 15))
 
-    Button(window, text='Select directory', command=get_directory) \
-        .grid(row=2, sticky=E + W, columnspan=2, padx=3, pady=3)
-    Button(window, text='Download', command=call_function) \
-        .grid(row=3, sticky=W + E, columnspan=2, padx=3)
-    Button(window, text='Quit', command=window.quit) \
-        .grid(row=4, sticky=W + E, columnspan=2, padx=3, pady=5)
+    mainframe.columnconfigure(0, weight=1, uniform='third')
+    mainframe.columnconfigure(1, weight=1, uniform='third')
+    mainframe.columnconfigure(2, weight=1, uniform='third')
+
+    ttk.Label(mainframe, text="Enter valid Youtube url")\
+        .grid(row=0)
+
+    e1 = ttk.Entry(mainframe)
+    e1.grid(row=1, columnspan=3, sticky=W+E, pady=(0,5))
+
+    btn_dir = ttk.Button(mainframe, text='Select directory', command=get_directory)
+    btn_dir.grid(row=2, column=1, sticky=W+E)
+
+    btn_download = ttk.Button(mainframe, text='Download', command=call_function)
+    btn_download.grid(row=2, column=2, sticky=W+E)
+
+    btn_quit = ttk.Button(mainframe, text='Quit', command=root.quit)
+    btn_quit.grid(row=3, column=2, sticky=W+E)
 
     mainloop()
 
