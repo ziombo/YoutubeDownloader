@@ -5,55 +5,78 @@ from tkinter.filedialog import askdirectory
 import youtube_dl
 
 
-def show_video_dialog(on_click):
-    def call_function():
+def show_video_dialog():
+    __url_valid = False
+
+    def download_from_yt():
+        if not verify_url():
+            return
+
         if hasattr(root, 'directory'):
-            on_click(e1.get(), root.directory)
+            download_mp3(entry_url.get(), root.directory)
         else:
-            on_click(e1.get(), askdirectory())
+            download_mp3(entry_url.get(), askdirectory())
 
     def get_directory():
         root.directory = askdirectory()
 
+    def verify_url():
+        url = entry_url.get()
+        if 'watch?' in url:
+            return True
+        elif 'playlist?' in url:
+            return True
+        else:
+            link_type.set('Invalid url')
+            return False
+
+    def my_hook(hook):
+        print(f"Current status: {hook['status']}")
+        link_type.set(hook['status'])
+
+    def download_mp3(video_url, save_directory):
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192',
+            }],
+            'outtmpl': f'{save_directory}/%(title)s.%(ext)s',
+            'noplaylist': True,
+            'progress_hooks': [my_hook],
+        }
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([f'{video_url}'])
+
     root = Tk()
     root.title('Youtube Downloader')
+    link_type = StringVar()
 
     mainframe = ttk.Frame(root)
     mainframe.grid(padx=7, pady=3, sticky=(N, W, E, S))
-
 
     mainframe.columnconfigure(0, weight=1, uniform='third')
     mainframe.columnconfigure(1, weight=1, uniform='third')
     mainframe.columnconfigure(2, weight=1, uniform='third')
 
-    ttk.Label(mainframe, text="Enter valid Youtube url")\
-        .grid(row=0)
+    lbl_url = ttk.Label(mainframe, text="Youtube url")
+    lbl_url.grid(row=0, sticky=W)
 
-    e1 = ttk.Entry(mainframe)
-    e1.grid(row=1, columnspan=3, sticky=W+E, pady=(0,5))
+    entry_url = ttk.Entry(mainframe)
+    entry_url.grid(row=1, columnspan=3, sticky=W + E, pady=(0, 5))
 
-    btn_dir = ttk.Button(mainframe, text='Select directory', command=get_directory)
-    btn_dir.grid(row=2, column=1, sticky=W+E)
+    img_directory = PhotoImage(file="directory.png")
+    btn_dir = ttk.Button(mainframe, image=img_directory, command=get_directory)
+    btn_dir.grid(row=1, column=4, sticky=N)
 
-    btn_download = ttk.Button(mainframe, text='Download', command=call_function)
-    btn_download.grid(row=2, column=2, sticky=W+E)
+    btn_download = ttk.Button(mainframe, text='Download', command=download_from_yt)
+    btn_download.grid(row=2, column=0, columnspan=2, sticky=W + E)
 
     btn_quit = ttk.Button(mainframe, text='Quit', command=root.quit)
-    btn_quit.grid(row=3, column=2, sticky=W+E)
+    btn_quit.grid(row=2, column=2, columnspan=2, sticky=W + E)
+
+    lbl_current_action = ttk.Label(mainframe, textvariable=link_type)
+    lbl_current_action.grid(row=3, columnspan=4)
 
     mainloop()
-
-
-def download_mp3(video_url, save_directory):
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
-        'outtmpl': f'{save_directory}/%(title)s.%(ext)s',
-
-    }
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([f'{video_url}'])

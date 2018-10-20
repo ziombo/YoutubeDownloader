@@ -1,5 +1,5 @@
 from YoutubeApiWrapper import get_video_ids_from_playlist, print_video_ids_from_playlist
-from DesktopInterface import show_video_dialog, download_mp3
+from DesktopInterface import show_video_dialog
 
 
-show_video_dialog(download_mp3)
+show_video_dialog()
