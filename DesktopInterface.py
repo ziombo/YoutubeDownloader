@@ -2,20 +2,27 @@ from tkinter import *
 from tkinter import ttk
 from tkinter.filedialog import askdirectory
 
+import threading
+from concurrent.futures import ThreadPoolExecutor
+
 import youtube_dl
 
 
 def show_video_dialog():
-    __url_valid = False
+    executor = ThreadPoolExecutor(max_workers=8)
+
+    # def start_downloading():
+    #     t = threading.Thread(target=download_from_yt)
+    #     t.start()
 
     def download_from_yt():
         if not verify_url():
             return
 
-        if hasattr(root, 'directory'):
-            download_mp3(entry_url.get(), root.directory)
-        else:
-            download_mp3(entry_url.get(), askdirectory())
+        if not hasattr(root, 'directory'):
+            get_directory()
+
+        executor.submit(download_mp3, entry_url.get(), root.directory)
 
     def get_directory():
         root.directory = askdirectory()
@@ -51,7 +58,11 @@ def show_video_dialog():
 
     root = Tk()
     root.title('Youtube Downloader')
+
+    # TkInter variables
     link_type = StringVar()
+    __download_playlist = BooleanVar()
+    __download_playlist.set(True)
 
     mainframe = ttk.Frame(root)
     mainframe.grid(padx=7, pady=3, sticky=(N, W, E, S))
@@ -71,12 +82,16 @@ def show_video_dialog():
     btn_dir.grid(row=1, column=4, sticky=N)
 
     btn_download = ttk.Button(mainframe, text='Download', command=download_from_yt)
-    btn_download.grid(row=2, column=0, columnspan=2, sticky=W + E)
+    btn_download.grid(row=3, column=0, columnspan=2, sticky=W + E)
 
     btn_quit = ttk.Button(mainframe, text='Quit', command=root.quit)
-    btn_quit.grid(row=2, column=2, columnspan=2, sticky=W + E)
+    btn_quit.grid(row=3, column=2, columnspan=3, sticky=W + E)
 
     lbl_current_action = ttk.Label(mainframe, textvariable=link_type)
-    lbl_current_action.grid(row=3, columnspan=4)
+    lbl_current_action.grid(row=2, column=2, columnspan=2)
+    #    lbl_current_action.grid_forget()
+
+    chk_playlist = ttk.Checkbutton(mainframe, text='Download whole playlist',
+                                   variable=__download_playlist)
 
     mainloop()
